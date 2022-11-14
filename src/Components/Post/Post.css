@@ -1,0 +1,16 @@
+.Post {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid green;
+    justify-content: center;
+    margin: 8px;
+}
+
+.Selected {
+    background-color: blue;
+    color: white;
+}
+
+.Post * {
+    margin: 8px;
+}

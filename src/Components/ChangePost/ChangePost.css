@@ -1,0 +1,11 @@
+.ChangePost {
+    margin: 10px;
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+}
+
+.ChangePost * {
+    margin-top: 10px;
+}

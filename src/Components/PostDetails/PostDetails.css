@@ -1,0 +1,14 @@
+.PostDetails {
+    border: 1px solid blue;
+    display: grid;
+    
+}
+
+.PostDetails * {
+    margin: 10px;
+}
+
+.PostDetails h1 {
+    text-decoration: underline;
+    font-size: 24px;
+}
