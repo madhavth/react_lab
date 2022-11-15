@@ -22,8 +22,14 @@ export default function DashBoard(props) {
     }
 
     function onClicked(value) {
-        setPost({...post, title: value});
-        setPosts([...posts]);
+        const foundPost = posts.findIndex((p) => p.id === post.id);
+        setPosts(posts.map((p) => {
+            if (p.id === post.id) {
+                p.title = value;
+                setPost(p);
+            }
+            return p;
+        }));
     }
 
     return (<div>
