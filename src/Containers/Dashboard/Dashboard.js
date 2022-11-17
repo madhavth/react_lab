@@ -4,6 +4,7 @@ import PostDetails from "../../Components/PostDetails/PostDetails";
 import ChangePost from "../../Components/ChangePost/ChangePost";
 import axios from "axios";
 import AddPost from "../../Components/AddPost/AddPost";
+import './Dashboard.css';
 
 export default function DashBoard(props) {
 
@@ -125,8 +126,10 @@ export default function DashBoard(props) {
         </div>
 
 
-        <ChangePost onClicked={onClickedHandler}/>
-        {post && <PostDetails post={post} edit={editPost} delete={deletePost}/>}
+        {post == null ? <div className={'helpText'}>Click a post to change its title</div> :
+            <ChangePost onClicked={onClickedHandler}/>}
+        {post == null ? <div className={'helpText'}>Click a post to view its details</div> :
+            <PostDetails post={post} edit={editPost} delete={deletePost}/>}
         <AddPost onSubmitted={onSubmittedHandler}/>
 
     </div>);
