@@ -18,10 +18,25 @@ export default function DashBoard(props) {
     const [posts, setPosts] = useState(myPosts);
     const [post, setPost] = useState(null);
 
-    const fetchPosts = () => {
+    const getPostById = (id) => {
+        axios.get('http://localhost:8080/posts/' + id).then(
+            (response) => {
+                console.log('setting post response as : response');
+                setPost(response.data);
+            }
+        ).catch((e) => {
+            console.log(e.message);
+        })
+    }
+
+    const fetchPosts = (fetchedCallback) => {
         axios.get('http://localhost:8080/posts').then(
             response => {
+                console.log('the response data is:' + response.data);
                 setPosts(response.data);
+                if (fetchedCallback) {
+                    fetchedCallback();
+                }
             }
         ).catch((e) => {
             console.log('something went wrong ' + e.message());
@@ -37,10 +52,10 @@ export default function DashBoard(props) {
     }, []);
 
     function onClickedHandler(value) {
-        onClicked(value);
+        onChangeClicked(value);
     }
 
-    function onClicked(value) {
+    function onChangeClicked(value) {
         // const foundPost = post? posts.findIndex((p) => p.id === post.id): null;
         // setPosts(posts.map((p) => {
         //     // if (p.id === post.id) {
@@ -49,11 +64,13 @@ export default function DashBoard(props) {
         //     // }
         //     return p;
         // }));
-        axios.put("https://localhost:8080/posts/" + post.id, {
+        axios.put("http://localhost:8080/posts/" + post.id, {
             ...post,
             title: value
         }).then((response) => {
-            fetchPosts();
+            fetchPosts(() => {
+                getPostById(post.id);
+            });
         }).catch((e) => {
             console.log(e.message);
         });
@@ -61,34 +78,41 @@ export default function DashBoard(props) {
     }
 
     function editPost(id, post) {
-        axios.put('https://localhost:8080/posts/' + id, post).then((response) => {
-            fetchPosts();
+        axios.put('http://localhost:8080/posts/' + id, post).then((response) => {
+            fetchPosts(() => {
+                getPostById(post.id);
+            });
         }).catch((e) => {
             console.log(e.message);
         });
     }
 
-    function addPost(post) {
-        axios.post('https://localhost:8080/posts/', post).then(
+    function addPost(newPost) {
+        axios.post('http://localhost:8080/posts/', newPost,
+            // {headers: options}
+        ).then(
             (response) => {
-                // fetchPosts();
+                fetchPosts();
             }
         ).catch((e) => {
-            console.log('i am having a major issue adding and ')
+            console.log('::::ERROR WHILE ADDING DATA::::')
             console.log(e.message);
         });
     }
 
     function onSubmittedHandler(formData) {
-        // const post = {
-        //     title: formData.title, content: formData.content, author: formData.author
-        // }
-        // addPost(post);
+        const newPost = {
+            title: formData.title.value, content: formData.content.value, author: formData.author.value
+        };
+        addPost(newPost);
     }
 
     function deletePost(id) {
-        axios.delete('https://localhost:8080/posts/' + id).then((response) => {
+        axios.delete('http://localhost:8080/posts/' + id).then((response) => {
             fetchPosts();
+            if (id === post.id) {
+                setPost(null);
+            }
         }).catch((e) => {
             console.log(e.message);
         });

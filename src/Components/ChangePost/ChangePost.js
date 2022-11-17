@@ -9,7 +9,9 @@ export default function ChangePost(props) {
             <input ref={inputRef}/>
             <div>
                 <button
-                    onClick={() => props.onClicked(inputRef.current.value)}
+                    onClick={() => {
+                        props.onClicked(inputRef.current.value);
+                    }}
                 >Change Name
                 </button>
             </div>
