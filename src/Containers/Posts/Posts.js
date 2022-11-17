@@ -6,7 +6,7 @@ export default function Posts(props) {
 
     return posts.map((post) => {
         return (
-            <Post post={post} isSelected={props.selectedPost.id === post.id }
+            <Post key={post.id} post={post}  isSelected={props.selectedPost && props.selectedPost.id === post.id }
             onClick={props.onClick}
             />
         )
