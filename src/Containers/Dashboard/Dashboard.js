@@ -1,12 +1,16 @@
 import Posts from "../Posts/Posts";
 import {useEffect, useRef, useState} from "react";
+import React from 'react';
 import PostDetails from "../../Components/PostDetails/PostDetails";
 import ChangePost from "../../Components/ChangePost/ChangePost";
 import axios from "axios";
 import AddPost from "../../Components/AddPost/AddPost";
 import './Dashboard.css';
 
-export default function DashBoard(props) {
+export const SelectedPostContext = React.createContext();
+
+
+export function DashBoard(props) {
 
     const myPosts = [{
         "id": 111, "title": "Title 1", "author": "Author 1"
@@ -20,26 +24,22 @@ export default function DashBoard(props) {
     const [post, setPost] = useState(null);
 
     const getPostById = (id) => {
-        axios.get('http://localhost:8080/posts/' + id).then(
-            (response) => {
-                console.log('setting post response as : response');
-                setPost(response.data);
-            }
-        ).catch((e) => {
+        axios.get('http://localhost:8080/posts/' + id).then((response) => {
+            console.log('setting post response as : response');
+            setPost(response.data);
+        }).catch((e) => {
             console.log(e.message);
         })
     }
 
     const fetchPosts = (fetchedCallback) => {
-        axios.get('http://localhost:8080/posts').then(
-            response => {
-                console.log('the response data is:' + response.data);
-                setPosts(response.data);
-                if (fetchedCallback) {
-                    fetchedCallback();
-                }
+        axios.get('http://localhost:8080/posts').then(response => {
+            console.log('the response data is:' + response.data);
+            setPosts(response.data);
+            if (fetchedCallback) {
+                fetchedCallback();
             }
-        ).catch((e) => {
+        }).catch((e) => {
             console.log('something went wrong ' + e.message());
         });
     };
@@ -66,8 +66,7 @@ export default function DashBoard(props) {
         //     return p;
         // }));
         axios.put("http://localhost:8080/posts/" + post.id, {
-            ...post,
-            title: value
+            ...post, title: value
         }).then((response) => {
             fetchPosts(() => {
                 getPostById(post.id);
@@ -89,13 +88,10 @@ export default function DashBoard(props) {
     }
 
     function addPost(newPost) {
-        axios.post('http://localhost:8080/posts/', newPost,
-            // {headers: options}
-        ).then(
-            (response) => {
-                fetchPosts();
-            }
-        ).catch((e) => {
+        axios.post('http://localhost:8080/posts/', newPost, // {headers: options}
+        ).then((response) => {
+            fetchPosts();
+        }).catch((e) => {
             console.log('::::ERROR WHILE ADDING DATA::::')
             console.log(e.message);
         });
@@ -120,17 +116,18 @@ export default function DashBoard(props) {
     }
 
     return (<div>
-        <h1>Posts</h1>
-        <div className="Posts">
-            <Posts posts={posts} selectedPost={post} onClick={setPostHandler}/>
-        </div>
+        <SelectedPostContext.Provider value={post}>
+            <h1>Posts</h1>
+            <div className="Posts">
+                <Posts posts={posts} onClick={setPostHandler}/>
+            </div>
 
+            {post == null ? <div className={'helpText'}>Click a post to change its title</div> :
+                <ChangePost onClicked={onClickedHandler}/>}
+            {post == null ? <div className={'helpText'}>Click a post to view its details</div> :
+                <PostDetails edit={editPost} delete={deletePost}/>}
+            <AddPost onSubmitted={onSubmittedHandler}/>
 
-        {post == null ? <div className={'helpText'}>Click a post to change its title</div> :
-            <ChangePost onClicked={onClickedHandler}/>}
-        {post == null ? <div className={'helpText'}>Click a post to view its details</div> :
-            <PostDetails post={post} edit={editPost} delete={deletePost}/>}
-        <AddPost onSubmitted={onSubmittedHandler}/>
-
+        </SelectedPostContext.Provider>
     </div>);
 }
